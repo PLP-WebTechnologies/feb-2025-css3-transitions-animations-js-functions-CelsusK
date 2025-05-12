@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Interactive Animations</title>
+  <style>
+    /* Base styles */
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 20px;
+      transition: all 0.3s ease;
+    }
+    
+    .dark-theme {
+      background-color: #222;
+      color: #fff;
+    }
+    
+    /* Animations */
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-20px); }
+    }
+    
+    @keyframes colorChange {
+      0% { background-color: #ff9a9e; }
+      25% { background-color: #fad0c4; }
+      50% { background-color: #fbc2eb; }
+      100% { background-color: #a6c1ee; }
+    }
+    
+    .animated-box {
+      width: 100px;
+      height: 100px;
+      background-color: #4CAF50;
+      margin: 20px;
+      animation: bounce 2s infinite;
+      cursor: pointer;
+    }
+    
+    .glow-effect {
+      animation: colorChange 10s infinite alternate;
+    }
+    
+    .user-message {
+      opacity: 0;
+      transition: opacity 0.5s, transform 0.5s;
+      transform: translateX(-20px);
+    }
+    
+    .user-message.show {
+      opacity: 1;
+      transform: translateX(0);
+    }
+    
+    /* Layout */
+    .controls {
+      margin: 20px 0;
+      padding: 15px;
+      background: #f5f5f5;
+      border-radius: 5px;
+    }
+    
+    .dark-theme .controls {
+      background: #333;
+    }
+  </style>
+</head>
+<body class="page-background">
+  <header>
+    <h1>Interactive Animations Demo</h1>
+  </header>
+  
+  <main>
+    <div class="controls">
+      <h2>Controls</h2>
+      
+      <label for="theme-selector">Select Theme:</label>
+      <select id="theme-selector" onchange="applyTheme(this.value)">
+        <option value="">Default</option>
+        <option value="dark-theme">Dark Theme</option>
+      </select>
+      
+      <br><br>
+      
+      <label for="speed-control">Animation Speed:</label>
+      <input type="range" id="speed-control" min="0.5" max="5" step="0.5" value="1" 
+             oninput="setAnimationSpeed(this.value)">
+      
+      <br><br>
+      
+      <button onclick="savePreferences()">Save Preferences</button>
+      <button onclick="showWelcomeMessage()">Show Welcome</button>
+    </div>
+    
+    <div class="animated-box" onclick="toggleAnimation(this.id)" id="box1"></div>
+    
+    <div class="user-message" id="welcomeMessage">
+      <h2>Welcome back!</h2>
+      <p>Your preferences have been loaded.</p>
+    </div>
+  </main>
+  
+  <script>
+    // Load preferences when page loads
+    function loadPreferences() {
+      const savedTheme = localStorage.getItem('userTheme');
+      const savedSpeed = localStorage.getItem('animationSpeed');
+      
+      if (savedTheme) {
+        document.getElementById('theme-selector').value = savedTheme;
+        applyTheme(savedTheme);
+      }
+      
+      if (savedSpeed) {
+        document.getElementById('speed-control').value = savedSpeed;
+        setAnimationSpeed(savedSpeed);
+      }
+    }
+    
+    // Save preferences
+    function savePreferences() {
+      const theme = document.getElementById('theme-selector').value;
+      const animationSpeed = document.getElementById('speed-control').value;
+      
+      localStorage.setItem('userTheme', theme);
+      localStorage.setItem('animationSpeed', animationSpeed);
+      
+      showMessage('Preferences saved!');
+    }
+    
+    // Toggle animation
+    function toggleAnimation(elementId) {
+      const element = document.getElementById(elementId);
+      element.style.animationPlayState = 
+        element.style.animationPlayState === 'paused' ? 'running' : 'paused';
+    }
+    
+    // Set animation speed
+    function setAnimationSpeed(speed) {
+      const animatedElements = document.querySelectorAll('.animated-box');
+      animatedElements.forEach(el => {
+        el.style.animationDuration = `${speed}s`;
+      });
+    }
+    
+    // Apply theme
+    function applyTheme(theme) {
+      document.body.className = theme;
+      
+      if (theme === 'dark-theme') {
+        document.querySelector('header').classList.add('glow-effect');
+      } else {
+        document.querySelector('header').classList.remove('glow-effect');
+      }
+    }
+    
+    // Show welcome message
+    function showWelcomeMessage() {
+      const message = document.getElementById('welcomeMessage');
+      message.classList.add('show');
+      
+      setTimeout(() => {
+        message.classList.remove('show');
+      }, 3000);
+    }
+    
+    // Show temporary message
+    function showMessage(text) {
+      const message = document.getElementById('welcomeMessage');
+      message.querySelector('p').textContent = text;
+      message.classList.add('show');
+      
+      setTimeout(() => {
+        message.classList.remove('show');
+      }, 2000);
+    }
+    
+    // Initialize page
+    window.addEventListener('DOMContentLoaded', loadPreferences);
+  </script>
+</body>
+</html>
